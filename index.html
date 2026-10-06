@@ -3,3 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Clicker Game</title>
+    <style>
+        /* CSS: Styles how the game looks */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 50px;
+        }
+
+        .game-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .score-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4a90e2;
+            margin: 20px 0;
+        }
+
+        /* The main clicking button */
+        .click-btn {
+            background-color: #ff9f43;
+            border: none;
+            color: white;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 6px #ee5253;
+            transition: all 0.1s ease;
+            outline: none;
+            width: 150px;
+            height: 150px;
+        }
+
+        /* Makes the button look pressed down when clicked */
+        .click-btn:active {
+            box-shadow: 0 0px #ee5253;
+            transform: translateY(6px);
+        }
+
+        /* Shop upgrade button */
+        .upgrade-btn {
+            margin-top: 30px;
+            background-color: #10ac84;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .upgrade-btn:disabled {
+            background-color: #c8d6e5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Clicker Game</h1>
+        
+        <!-- Score and Multiplier Displays -->
+        <div class="score-display">Score: <span id="score">0</span></div>
+        <p>Current click power: +<span id="click-power">1</span></p>
+
+        <!-- Main Game Button -->
+        <button class="click-btn" id="click-me-btn">CLICK!</button>
+
+        <!-- Shop / Upgrade Section -->
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+        <h3>Shop</h3>
+        <button class="upgrade-btn" id="upgrade-btn">Buy Upgrade (Cost: 10)</button>
+    </div>
+
+    <script>
+        // JavaScript: Makes the game work
+        
+        // 1. Initialize game variables
+        let score = 0;
+        let clickPower = 1;
+        let upgradeCost = 10;
+
+        // 2. Get HTML elements so JavaScript can update them
+        const scoreDisplay = document.getElementById('score');
+        const clickPowerDisplay = document.getElementById('click-power');
+        const clickBtn = document.getElementById('click-me-btn');
+        const upgradeBtn = document.getElementById('upgrade-btn');
+
+        // 3. Main clicking logic
+        clickBtn.addEventListener('click', () => {
+            score += clickPower;
+            updateDisplay();
+        });
+
+        // 4. Upgrade buying logic
+        upgradeBtn.addEventListener('click', () => {
+            if (score >= upgradeCost) {
+                score -= upgradeCost;       // Pay the cost
+                clickPower += 1;            // Increase clicking power
+                upgradeCost = Math.floor(upgradeCost * 1.5); // Increase cost for next time
+                
+                updateDisplay();
+            }
+        });
+
+        // 5. Function to update the text and check button availability
+        function updateDisplay() {
+            scoreDisplay.textContent = score;
+            clickPowerDisplay.textContent = clickPower;
+            upgradeBtn.textContent = `Buy Upgrade (Cost: ${upgradeCost})`;
+
+            // Disable the upgrade button if the player can't afford it
+            if (score >= upgradeCost) {
+                upgradeBtn.disabled = false;
+            } else {
+                upgradeBtn.disabled = true;
+            }
+        }
+
+        // Run once at start to lock the upgrade button initially
+        updateDisplay();
+    </script>
+
+</body>
+</html>
