@@ -3,166 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Clicker Pro</title>
+    <title>Advanced Cyber Clicker</title>
     <style>
-        :root {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --accent: #38bdf8;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
-        main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; border-right: 1px solid #334155; }
-        aside { width: 380px; display: flex; flex-direction: column; background: var(--surface); }
-        .header { padding: 1.5rem; border-bottom: 1px solid #334155; }
-        #score { font-size: 3rem; font-weight: 800; color: var(--accent); }
-        #cps { font-size: 1rem; color: var(--text-muted); margin-top: 0.25rem; }
-        .click-area { position: relative; width: 260px; height: 260px; background: radial-gradient(circle, #2563eb 0%, #1d4ed8 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 5rem; cursor: pointer; user-select: none; box-shadow: 0 0 40px rgba(56, 189, 248, 0.2); transition: transform 0.05s; }
-        .click-area:active { transform: scale(0.95); }
-        .shop-list { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
-        .shop-item { background: var(--bg); padding: 1rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px solid #334155; transition: all 0.2s; }
-        .shop-item:hover:not(.disabled) { border-color: var(--accent); background: #131e35; }
-        .shop-item.disabled { opacity: 0.5; cursor: not-allowed; }
-        .item-info h3 { font-size: 1rem; }
-        .item-info p { font-size: 0.85rem; color: var(--text-muted); }
-        .item-cost { font-weight: 700; color: var(--accent); }
-        .floating-text { position: absolute; color: var(--accent); font-weight: 800; font-size: 1.5rem; pointer-events: none; animation: floatUp 0.8s ease-out forwards; z-index: 10; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-100px) scale(0.8); } }
+        :root { --bg: #0f172a; --panel: #1e293b; --accent: #38bdf8; --text: #f8fafc; --muted: #94a3b8; }
+        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; user-select: none; }
+        .game-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 900px; width: 100%; }
+        @media (max-width: 768px) { .game-container { grid-template-columns: 1fr; } }
+        .panel { background: var(--panel); border-radius: 12px; padding: 24px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); border: 1px solid #334155; }
+        .click-section { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; text-align: center; }
+        .stats-display h1 { font-size: 3rem; margin: 0; color: var(--accent); }
+        .click-orb { width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, #38bdf8 0%, #0369a1 100%); box-shadow: 0 0 30px rgba(56,189,248,0.4); cursor: pointer; transition: transform 0.05s; position: relative; }
+        .click-orb:active { transform: scale(0.95); }
+        .floating-text { position: absolute; color: #38bdf8; font-weight: bold; font-size: 1.5rem; pointer-events: none; animation: floatUp 0.8s ease-out forwards; }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-100px) scale(0.8); opacity: 0; } }
+        .shop-section h2, .prestige-box h2 { margin-top: 0; border-bottom: 2px solid #334155; padding-bottom: 8px; }
+        .upgrade-item { display: flex; justify-content: space-between; align-items: center; background: #0f172a; padding: 12px 16px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #334155; }
+        .upgrade-info p { margin: 0; }
+        .upgrade-name { font-weight: bold; }
+        .upgrade-desc { font-size: 0.85rem; color: var(--muted); }
+        button { background: var(--accent); color: #0f172a; border: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #7dd3fc; }
+        button:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
+        .prestige-box { background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%); border: 1px solid #581c87; margin-top: 20px; }
+        .achievements-box { grid-column: 1 / -1; display: flex; gap: 10px; flex-wrap: wrap; }
+        .achievement-badge { background: #334155; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; opacity: 0.4; }
+        .achievement-badge.unlocked { opacity: 1; background: #0e7490; border: 1px solid #22d3ee; }
     </style>
 </head>
 <body>
-
-    <main>
-        <div class="click-area" id="clicker">⚛️</div>
-    </main>
-
-    <aside>
-        <div class="header">
-            <div id="score">0</div>
-            <div id="cps">0.0 CPS</div>
+<div class="game-container">
+    <div class="panel click-section" id="clickArea">
+        <div class="stats-display">
+            <p style="color: var(--muted); margin: 0;">Gems Collected</p>
+            <h1 id="gemCount">0</h1>
+            <p id="gpsDisplay" style="color: var(--muted); margin: 5px 0 0 0;">per second: 0</p>
         </div>
-        <div class="shop-list" id="shop"></div>
-    </aside>
+        <div class="click-orb" id="orb"></div>
+        <div style="margin-top: 30px; width: 100%; font-size: 0.9rem; color: var(--muted);">
+            <p>💥 Gems Per Click (GPC): <span id="gpcDisplay" style="color: #fff">1</span></p>
+            <p>✨ Prestige Multiplier: <span id="prestigeMultiplierDisplay" style="color: #fff">100%</span></p>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="shop-section">
+            <h2>Upgrades & Tools</h2>
+            <div class="upgrade-item">
+                <div class="upgrade-info"><p class="upgrade-name">Plasma Pickaxe</p><p class="upgrade-desc">+1 Gem per click</p></div>
+                <button id="buyGPC" onclick="buyUpgrade('gpc')">Buy</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info"><p class="upgrade-name">Mining Drone</p><p class="upgrade-desc">+1 Gem/sec</p></div>
+                <button id="buyDrone" onclick="buyUpgrade('drone')">Buy</button>
+            </div>
+            <div class="upgrade-item">
+                <div class="upgrade-info"><p class="upgrade-name">Quantum Reactor</p><p class="upgrade-desc">+8 Gems/sec</p></div>
+                <button id="buyReactor" onclick="buyUpgrade('reactor')">Buy</button>
+            </div>
+        </div>
+        <div class="panel prestige-box">
+            <h2 style="color: #e9d5ff;">Ascension</h2>
+            <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0 0 10px 0;">Reset for a permanent +10% production boost per point.</p>
+            <p style="margin: 5px 0;">Claimable Points: <span id="claimablePoints" style="color: #a78bfa; font-weight: bold;">0</span></p>
+            <button id="prestigeBtn" onclick="performPrestige()" style="background: #a78bfa; width: 100%;">Ascend Now</button>
+        </div>
+    </div>
+    <div class="panel achievements-box">
+        <div class="achievement-badge" id="ach-1">Novice Clicker (100 Gems)</div>
+        <div class="achievement-badge" id="ach-2">Automation (First Drone)</div>
+        <div class="achievement-badge" id="ach-3">Cosmic Ruler (Ascend once)</div>
+    </div>
+</div>
+<script>
+    let state = { gems: 0, totalGemsEarned: 0, gpc: 1, drones: 0, reactors: 0, prestigePoints: 0, achievements: [] };
+    const configs = { gpc: { baseCost: 10, rate: 1.15 }, drone: { baseCost: 50, rate: 1.15, yield: 1 }, reactor: { baseCost: 400, rate: 1.2, yield: 8 } };
+    const orb = document.getElementById('orb'), clickArea = document.getElementById('clickArea');
 
-    <script>
-        const state = {
-            points: 0,
-            totalClicks: 0,
-            upgrades: { auto: 0, factory: 0, quantum: 0 }
-        };
+    function getCost(type, count) { return Math.floor(configs[type].baseCost * Math.pow(configs[type].rate, count)); }
+    function getGPS() { return ((state.drones * configs.drone.yield) + (state.reactors * configs.reactor.yield)) * (1 + state.prestigePoints * 0.1); }
+    function getGPC() { return state.gpc * (1 + state.prestigePoints * 0.1); }
 
-        const config = [
-            { id: 'auto', name: 'Auto-Spanner', baseCost: 15, cps: 0.1 },
-            { id: 'factory', name: 'Fusion Engine', baseCost: 100, cps: 1 },
-            { id: 'quantum', name: 'Singularity Grid', baseCost: 1100, cps: 8 }
-        ];
+    orb.addEventListener('click', (e) => {
+        let yieldPerClick = getGPC(); state.gems += yieldPerClick; state.totalGemsEarned += yieldPerClick;
+        createFloatingText(e.clientX, e.clientY, `+${Math.floor(yieldPerClick)}`); updateUI(); checkAchievements();
+    });
 
-        // Load Save Data Safely
-        try {
-            const saved = localStorage.getItem('quantum_clicker_save');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                Object.assign(state, parsed);
-            }
-        } catch (e) { console.error("Failed to load save", e); }
+    function createFloatingText(x, y, text) {
+        const span = document.createElement('span'); span.classList.add('floating-text'); span.innerText = text;
+        const rect = clickArea.getBoundingClientRect(); span.style.left = `${x - rect.left}px`; span.style.top = `${y - rect.top}px`;
+        clickArea.appendChild(span); setTimeout(() => span.remove(), 800);
+    }
 
-        const clicker = document.getElementById('clicker');
-        const scoreDisplay = document.getElementById('score');
-        const cpsDisplay = document.getElementById('cps');
-        const shopElement = document.getElementById('shop');
-
-        function getCost(item) {
-            return Math.floor(item.baseCost * Math.pow(1.15, state.upgrades[item.id] || 0));
+    function buyUpgrade(type) {
+        let cost = type === 'gpc' ? getCost('gpc', state.gpc - 1) : getCost(type, state[type + 's'] || state.drones);
+        if (state.gems >= cost) {
+            state.gems -= cost;
+            if (type === 'gpc') state.gpc++; else if (type === 'drone') state.drones++; else state.reactors++;
+            updateUI(); checkAchievements();
         }
+    }
 
-        function getCps() {
-            return config.reduce((acc, item) => acc + ((state.upgrades[item.id] || 0) * item.cps), 0);
-        }
-
-        function updateUI() {
-            scoreDisplay.textContent = Math.floor(state.points).toLocaleString();
-            cpsDisplay.textContent = `${getCps().toFixed(1)} CPS`;
-            
-            config.forEach(item => {
-                const btn = document.getElementById(`btn-${item.id}`);
-                const cost = getCost(item);
-                if (btn) {
-                    btn.querySelector('.item-cost').textContent = cost.toLocaleString();
-                    btn.querySelector('.item-count').textContent = state.upgrades[item.id] || 0;
-                    if (state.points >= cost) {
-                        btn.classList.remove('disabled');
-                    } else {
-                        btn.classList.add('disabled');
-                    }
-                }
-            });
-        }
-
-        // Build Shop
-        config.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'shop-item';
-            div.id = `btn-${item.id}`;
-            div.innerHTML = `
-                <div class="item-info">
-                    <h3>${item.name} (<span class="item-count">0</span>)</h3>
-                    <p>+${item.cps} CPS</p>
-                </div>
-                <div class="item-cost">0</div>
-            `;
-            div.addEventListener('click', () => {
-                const cost = getCost(item);
-                if (state.points >= cost) {
-                    state.points -= cost;
-                    state.upgrades[item.id] = (state.upgrades[item.id] || 0) + 1;
-                    updateUI();
-                    saveGame();
-                }
-            });
-            shopElement.appendChild(div);
-        });
-
-        // Click Handling with Floating Numbers
-        clicker.addEventListener('click', (e) => {
-            state.points += 1;
-            state.totalClicks += 1;
-            
-            const float = document.createElement('div');
-            float.className = 'floating-text';
-            float.textContent = '+1';
-            float.style.left = `${e.clientX - 15}px`;
-            float.style.top = `${e.clientY - 20}px`;
-            document.body.appendChild(float);
-            setTimeout(() => float.remove(), 800);
-
+    function calculatePrestigePoints() { return state.totalGemsEarned < 1000 ? 0 : Math.floor(Math.sqrt(state.totalGemsEarned / 1000)); }
+    function performPrestige() {
+        let claimable = calculatePrestigePoints() - state.prestigePoints;
+        if (claimable > 0) {
+            state.prestigePoints += claimable; state.gems = 0; state.gpc = 1; state.drones = 0; state.reactors = 0;
+            if (!state.achievements.includes('ach-3')) state.achievements.push('ach-3');
             updateUI();
-        });
-
-        // Game Loop Framework (Delta Time Driven)
-        let lastTime = performance.now();
-        function gameLoop(now) {
-            const delta = (now - lastTime) / 1000;
-            lastTime = now;
-
-            if (delta > 0) {
-                state.points += getCps() * delta;
-                updateUI();
-            }
-            requestAnimationFrame(gameLoop);
         }
+    }
 
-        function saveGame() {
-            localStorage.setItem('quantum_clicker_save', JSON.stringify(state));
-        }
+    function checkAchievements() {
+        if (state.totalGemsEarned >= 100) unlock('ach-1');
+        if (state.drones > 0) unlock('ach-2');
+    }
+    function unlock(id) { if (!state.achievements.includes(id)) { state.achievements.push(id); document.getElementById(id).classList.add('unlocked'); } }
 
-        // Auto Save Interval (Every 15 Seconds)
-        setInterval(saveGame, 15000);
+    function updateUI() {
+        document.getElementById('gemCount').innerText = Math.floor(state.gems).toLocaleString();
+        document.getElementById('gpsDisplay').innerText = `per second: ${getGPS().toFixed(1)}`;
+        document.getElementById('gpcDisplay').innerText = getGPC().toFixed(1);
+        document.getElementById('prestigeMultiplierDisplay').innerText = `${100 + (state.prestigePoints * 10)}%`;
 
-        // Run Engine
-        updateUI();
-        requestAnimationFrame(gameLoop);
-    </script>
+        let cGPC = getCost('gpc', state.gpc - 1), cDrone = getCost('drone', state.drones), cReactor = getCost('reactor', state.reactors);
+        document.getElementById('buyGPC').innerText = `Buy (${cGPC})`; document.getElementById('buyGPC').disabled = state.gems < cGPC;
+        document.getElementById('buyDrone').innerText = `Buy (${cDrone})`; document.getElementById('buyDrone').disabled = state.gems < cDrone;
+        document.getElementById('buyReactor').innerText = `Buy (${cReactor})`; document.getElementById('buyReactor').disabled = state.gems < cReactor;
+
+        let claimable = calculatePrestigePoints() - state.prestigePoints;
+        document.getElementById('claimablePoints').innerText = claimable > 0 ? claimable : 0;
+        document.getElementById('prestigeBtn').disabled = claimable <= 0;
+        state.achievements.forEach(id => document.getElementById(id)?.classList.add('unlocked'));
+    }
+
+    setInterval(() => { state.gems += getGPS() / 10; state.totalGemsEarned += getGPS() / 10; updateUI(); }, 100);
+    updateUI();
+</script>
 </body>
 </html>
