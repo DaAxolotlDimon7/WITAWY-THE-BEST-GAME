@@ -1,372 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quantum Clicker - Advanced Edition</title>
-  <style>
-    :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #38bdf8;
-      --accent-hover: #0ea5e9;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Clicker Pro</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-color: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
+        /* Layout Structure */
+        .game-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
 
-    header {
-      background: var(--card-bg);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid #334155;
-    }
+        .click-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+            position: relative;
+        }
 
-    header h1 {
-      font-size: 1.5rem;
-      color: var(--accent);
-    }
+        .shop-section {
+            width: 400px;
+            background-color: var(--panel-color);
+            border-left: 2px solid #334155;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
 
-    .stats-bar {
-      display: flex;
-      gap: 2rem;
-      font-size: 1.1rem;
-    }
+        /* Stats Display */
+        .stats-panel {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
 
-    .main-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      flex: 1;
-      gap: 1.5rem;
-      padding: 1.5rem;
-      overflow: hidden;
-    }
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
 
-    .click-section {
-      background: var(--card-bg);
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      border: 1px solid #334155;
-    }
+        /* The Core Clicker */
+        .click-cookie {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #38bdf8, #0369a1);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+            transition: transform 0.05s ease;
+            outline: none;
+            border: none;
+        }
 
-    #quantumButton {
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      background: radial-gradient(circle, var(--accent) 0%, #0369a1 100%);
-      border: 4px solid #bae6fd;
-      color: white;
-      font-size: 1.5rem;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
-      transition: transform 0.05s ease, box-shadow 0.1s ease;
-      user-select: none;
-    }
+        .click-cookie:active {
+            transform: scale(0.95);
+        }
 
-    #quantumButton:active {
-      transform: scale(0.95);
-      box-shadow: 0 0 15px rgba(56, 189, 248, 0.8);
-    }
+        /* Floating Text Effect */
+        .floating-text {
+            position: absolute;
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+        }
 
-    .floating-text {
-      position: absolute;
-      color: #4ade80;
-      font-weight: bold;
-      pointer-events: none;
-      animation: floatUp 0.8s ease-out forwards;
-    }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(0.8); opacity: 0; }
+        }
 
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-50px); }
-    }
+        /* Upgrade Cards */
+        .upgrade-card {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
 
-    .shop-section {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      border: 1px solid #334155;
-      overflow-y: auto;
-    }
+        .upgrade-card:hover:not(.disabled) {
+            border-color: var(--accent-color);
+            background-color: #131f38;
+        }
 
-    .shop-section h2 {
-      margin-bottom: 1rem;
-      font-size: 1.25rem;
-      border-bottom: 1px solid #334155;
-      padding-bottom: 0.5rem;
-    }
+        .upgrade-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
 
-    .upgrade-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75srem;
-    }
+        .upgrade-info h4 { margin: 0 0 5px 0; color: #fff; }
+        .upgrade-info p { margin: 0; font-size: 0.85rem; color: #94a3b8; }
+        .upgrade-cost { font-weight: bold; color: #e2e8f0; }
 
-    .upgrade-item {
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        /* Achievements Notification */
+        #notification-center {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+        }
 
-    .upgrade-info h3 {
-      font-size: 1rem;
-    }
+        .toast {
+            background: #22c55e;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+        }
 
-    .upgrade-info p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .buy-btn {
-      background: var(--accent);
-      color: #0f172a;
-      font-weight: bold;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .buy-btn:hover {
-      background: var(--accent-hover);
-      color: white;
-    }
-
-    .buy-btn:disabled {
-      background: #475569;
-      color: #94a3b8;
-      cursor: not-allowed;
-    }
-
-    .controls-bar {
-      background: var(--card-bg);
-      padding: 0.75rem 2rem;
-      display: flex;
-      justify-content: flex-end;
-      gap: 1rem;
-      border-top: 1px solid #334155;
-    }
-
-    .ctrl-btn {
-      background: #334155;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-
-    .ctrl-btn.danger {
-      background: #ef4444;
-    }
-  </style>
+        @keyframes slideIn { from { transform: translateX(-120%); } to { transform: translateX(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(20px); } }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>Quantum Clicker</h1>
-    <div class="stats-bar">
-      <div>Quanta: <span id="scoreDisplay">0</span></div>
-      <div>Per Sec (CPS): <span id="cpsDisplay">0</span></div>
-      <div>Per Click (GPC): <span id="gpcDisplay">1</span></div>
-      <div>Prestige: <span id="prestigeDisplay">1x</span></div>
+    <div class="game-container">
+        <!-- Main Clicking Left Side -->
+        <div class="click-section" id="click-zone">
+            <div class="stats-panel">
+                <div class="score-display" id="total-points">0</div>
+                <div id="pps-display">Per Second: 0</div>
+            </div>
+            <button class="click-cookie" id="cookie-btn"></button>
+        </div>
+
+        <!-- Shop Right Side -->
+        <div class="shop-section">
+            <h3>Quantum Generators</h3>
+            <div id="shop-container"></div>
+        </div>
     </div>
-  </header>
 
-  <main class="main-container">
-    <div class="click-section" id="clickArea">
-      <button id="quantumButton">CLICK ME</button>
-    </div>
+    <div id="notification-center"></div>
 
-    <div class="shop-section">
-      <h2>Quantum Facilities & Upgrades</h2>
-      <div class="upgrade-list" id="upgradeList">
-        <!-- Dynamically populated via JS -->
-      </div>
-    </div>
-  </main>
+    <script>
+        // --- GAME STATE ---
+        const gameState = {
+            points: 0,
+            totalPointsEarned: 0,
+            lastSaveTime: Date.now(),
+            structures: {
+                clicker:  { id: 'clicker', name: 'Auto-Clicker', baseCost: 15,    costMultiplier: 1.15, count: 0, pps: 0.1 },
+                plasma:   { id: 'plasma',  name: 'Plasma Engine', baseCost: 100,   costMultiplier: 1.15, count: 0, pps: 1.0 },
+                reactor:  { id: 'reactor', name: 'Warp Reactor',  baseCost: 1100,  costMultiplier: 1.15, count: 0, pps: 8.0 },
+                quantum:  { id: 'quantum', name: 'Quantum Core',  baseCost: 12000, costMultiplier: 1.15, count: 0, pps: 47.0 }
+            },
+            achievements: [
+                { id: 'first_click', name: 'First Contact', desc: 'Click the anomaly once.', unlocked: false, condition: () => gameState.totalPointsEarned >= 1 },
+                { id: 'hundred_club', name: 'Centurion', desc: 'Accumulate 100 total energy.', unlocked: false, condition: () => gameState.totalPointsEarned >= 100 }
+            ]
+        };
 
-  <div class="controls-bar">
-    <button class="ctrl-btn" onclick="prestigeGame()">Prestige (Reset for +Multiplier)</button>
-    <button class="ctrl-btn danger" onclick="resetGame()">Hard Reset</button>
-  </div>
+        // --- MATH HELPERS ---
+        const getUpgradeCost = (struct) => Math.floor(struct.baseCost * Math.pow(struct.costMultiplier, struct.count));
+        
+        const getPointsPerSecond = () => {
+            return Object.values(gameState.structures).reduce((acc, s) => acc + (s.count * s.pps), 0);
+        };
 
-  <script>
-    let score = 0;
-    let gpc = 1;
-    let cps = 0;
-    let prestigeMultiplier = 1;
+        // --- CORE LOGIC ---
+        function initGame() {
+            loadGame();
+            calculateOfflineProgress();
+            buildShopUI();
+            setupEventListeners();
+            
+            // Start the optimized Delta-Time game loop
+            let lastFrameTime = performance.now();
+            function gameLoop(now) {
+                let deltaTime = (now - lastFrameTime) / 1000;
+                lastFrameTime = now;
 
-    const upgrades = [
-      { id: 'cursor', name: 'Nano-Bot', desc: '+1 Quanta per click', cost: 15, gpcAdd: 1, cpsAdd: 0, count: 0, costMult: 1.15 },
-      { id: 'server', name: 'Quantum Node', desc: '+2 Quanta per second', cost: 50, gpcAdd: 0, cpsAdd: 2, count: 0, costMult: 1.15 },
-      { id: 'ai', name: 'Neural Core', desc: '+15 Quanta per second', cost: 350, gpcAdd: 0, cpsAdd: 15, count: 0, costMult: 1.15 },
-      { id: 'gateway', name: 'Dimension Rift', desc: '+100 Quanta per second', cost: 2000, gpcAdd: 0, cpsAdd: 100, count: 0, costMult: 1.15 },
-      { id: 'hyperion', name: 'Hyperion Engine', desc: '+500 Quanta per click', cost: 15000, gpcAdd: 500, cpsAdd: 0, count: 0, costMult: 1.20 }
-    ];
+                // Add points based on true time passed elapsed
+                const pps = getPointsPerSecond();
+                if (pps > 0) {
+                    addPoints(pps * deltaTime);
+                }
 
-    const scoreDisplay = document.getElementById('scoreDisplay');
-    const cpsDisplay = document.getElementById('cpsDisplay');
-    const gpcDisplay = document.getElementById('gpcDisplay');
-    const prestigeDisplay = document.getElementById('prestigeDisplay');
-    const quantumButton = document.getElementById('quantumButton');
-    const clickArea = document.getElementById('clickArea');
-    const upgradeList = document.getElementById('upgradeList');
+                checkAchievements();
+                updateUI();
+                requestAnimationFrame(gameLoop);
+            }
+            requestAnimationFrame(gameLoop);
 
-    function renderShop() {
-      upgradeList.innerHTML = '';
-      upgrades.forEach((u, index) => {
-        const el = document.createElement('div');
-        el.className = 'upgrade-item';
-        el.innerHTML = `
-          <div class="upgrade-info">
-            <h3>${u.name} (Owned: ${u.count})</h3>
-            <p>${u.desc}</p>
-            <p>Cost: ${Math.floor(u.cost)} Quanta</p>
-          </div>
-          <button class="buy-btn" id="buy-${u.id}" onclick="buyUpgrade(${index})">Buy</button>
-        `;
-        upgradeList.appendChild(el);
-      });
-      updateUI();
-    }
-
-    function updateUI() {
-      scoreDisplay.innerText = Math.floor(score).toLocaleString();
-      cpsDisplay.innerText = Math.floor(cps * prestigeMultiplier).toLocaleString();
-      gpcDisplay.innerText = Math.floor(gpc * prestigeMultiplier).toLocaleString();
-      prestigeDisplay.innerText = prestigeMultiplier.toFixed(1) + 'x';
-
-      upgrades.forEach((u) => {
-        const btn = document.getElementById(`buy-${u.id}`);
-        if (btn) {
-          btn.disabled = score < u.cost;
+            // Auto-save every 10 seconds
+            setInterval(saveGame, 10000);
         }
-      });
-    }
 
-    function createFloatingText(text, x, y) {
-      const floatEl = document.createElement('div');
-      floatEl.className = 'floating-text';
-      floatEl.innerText = text;
-      floatEl.style.left = `${x}px`;
-      floatEl.style.top = `${y}px`;
-      clickArea.appendChild(floatEl);
-      setTimeout(() => floatEl.remove(), 800);
-    }
+        function addPoints(amount) {
+            gameState.points += amount;
+            gameState.totalPointsEarned += amount;
+        }
 
-    quantumButton.addEventListener('click', (e) => {
-      const earned = gpc * prestigeMultiplier;
-      score += earned;
+        function buyStructure(id) {
+            const struct = gameState.structures[id];
+            const cost = getUpgradeCost(struct);
 
-      const rect = quantumButton.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      createFloatingText(`+${Math.floor(earned)}`, x, y);
+            if (gameState.points >= cost) {
+                gameState.points -= cost;
+                struct.count++;
+                buildShopUI(); // Redraw prices
+                triggerNotification(`Purchased ${struct.name}!`);
+            }
+        }
 
-      updateUI();
-      saveGame();
-    });
+        // --- OFFLINE PROGRESS ---
+        function calculateOfflineProgress() {
+            const now = Date.now();
+            const elapsedSeconds = (now - gameState.lastSaveTime) / 1000;
+            
+            if (elapsedSeconds > 10) { // Only if away for > 10s
+                const pps = getPointsPerSecond();
+                const offlineEarnings = pps * elapsedSeconds;
+                if (offlineEarnings > 0) {
+                    addPoints(offlineEarnings);
+                    alert(`Welcome back! You earned ${Math.floor(offlineEarnings).toLocaleString()} points while offline.`);
+                }
+            }
+        }
 
-    function buyUpgrade(index) {
-      const u = upgrades[index];
-      if (score >= u.cost) {
-        score -= u.cost;
-        u.count++;
-        gpc += u.gpcAdd;
-        cps += u.cpsAdd;
-        u.cost = u.cost * u.costMult;
-        renderShop();
-        saveGame();
-      }
-    }
+        // --- UI & DYNAMICS ---
+        function buildShopUI() {
+            const container = document.getElementById('shop-container');
+            container.innerHTML = '';
 
-    // Game loop (10 times per second)
-    setInterval(() => {
-      score += (cps * prestigeMultiplier) / 10;
-      updateUI();
-    }, 100);
+            Object.values(gameState.structures).forEach(struct => {
+                const cost = getUpgradeCost(struct);
+                const card = document.createElement('div');
+                card.className = `upgrade-card ${gameState.points < cost ? 'disabled' : ''}`;
+                card.id = `shop-${struct.id}`;
+                card.onclick = () => buyStructure(struct.id);
 
-    // Auto-save every 5 seconds
-    setInterval(() => {
-      saveGame();
-    }, 5000);
-
-    function saveGame() {
-      const gameState = { score, gpc, cps, prestigeMultiplier, upgrades };
-      localStorage.setItem('quantumClickerSave', JSON.stringify(gameState));
-    }
-
-    function loadGame() {
-      const saved = localStorage.getItem('quantumClickerSave');
-      if (saved) {
-        try {
-          const data = JSON.parse(saved);
-          score = data.score || 0;
-          gpc = data.gpc || 1;
-          cps = data.cps || 0;
-          prestigeMultiplier = data.prestigeMultiplier || 1;
-          if (data.upgrades) {
-            data.upgrades.forEach((savedU, i) => {
-              if (upgrades[i]) {
-                upgrades[i].count = savedU.count;
-                upgrades[i].cost = savedU.cost;
-              }
+                card.innerHTML = `
+                    <div class="upgrade-info">
+                        <h4>${struct.name} (${struct.count})</h4>
+                        <p>Generates +${struct.pps.toFixed(1)}/s</p>
+                    </div>
+                    <div class="upgrade-cost">${cost.toLocaleString()} EP</div>
+                `;
+                container.appendChild(card);
             });
-          }
-        } catch (e) {
-          console.error('Failed to load save');
         }
-      }
-      renderShop();
-    }
 
-    function prestigeGame() {
-      if (score < 10000) {
-        alert('You need at least 10,000 Quanta to prestige!');
-        return;
-      }
-      const bonus = Math.floor(score / 5000);
-      prestigeMultiplier += bonus * 0.5;
-      score = 0;
-      gpc = 1;
-      cps = 0;
-      upgrades.forEach(u => {
-        u.count = 0;
-        u.cost = u.cost / Math.pow(u.costMult, u.count);
-      });
-      renderShop();
-      saveGame();
-    }
+        function updateUI() {
+            document.getElementById('total-points').innerText = Math.floor(gameState.points).toLocaleString();
+            document.getElementById('pps-display').innerText = `Per Second: ${getPointsPerSecond().toFixed(1)}`;
 
-    function resetGame() {
+            // Dynamically toggle disabled states in the UI shop smoothly
+            Object.values(gameState.structures).forEach(struct => {
+                const card = document.getElementById(`shop-${struct.id}`);
+                if (card) {
+                    const cost = getUpgradeCost(struct);
